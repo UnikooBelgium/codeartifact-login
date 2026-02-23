@@ -24,10 +24,10 @@ async function main() {
   const token = await getToken();
 
   await execAsync(
-    `npm config set "${scope}:registry" "${typescriptRegistryUrl}" --global`,
+    `npm config set "${scope}:registry" "${typescriptRegistryUrl}" -ws=false --location user`,
   );
   await execAsync(
-    `npm config set "//${domain}-${domainOwner}.d.codeartifact.${region}.amazonaws.com/npm/${typescriptRepo}/:_authToken" "${token}" --global`,
+    `npm config set "//${domain}-${domainOwner}.d.codeartifact.${region}.amazonaws.com/npm/${typescriptRepo}/:_authToken" "${token}" -ws=false --location user`,
   );
 
   console.log("✅ npm codeartifact configured");
