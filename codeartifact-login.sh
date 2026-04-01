@@ -1,4 +1,5 @@
 #!/bin/bash
+export UV_INDEX_STUDIO_FLEDGE_USERNAME=aws
 
 refresh_codeartifact_token() {
     local TOKEN_FILE=~/.codeartifact-token
