@@ -63,10 +63,16 @@ refresh_codeartifact_token() {
     fi
 }
 
+_project_uses_codeartifact() {
+  [ -f pyproject.toml ] && grep -q "codeartifact" pyproject.toml
+}
+
 uv() {
   case "$1" in
     add|sync|install|lock)
-      refresh_codeartifact_token || return 1
+      if _project_uses_codeartifact; then
+        refresh_codeartifact_token || return 1
+      fi
       ;;
   esac
   command uv "$@"
