@@ -67,13 +67,10 @@ _project_uses_codeartifact() {
   [ -f pyproject.toml ] && grep -q "codeartifact" pyproject.toml
 }
 
-uv() {
-  case "$1" in
-    add|sync|install|lock)
-      if _project_uses_codeartifact; then
-        refresh_codeartifact_token || return 1
-      fi
-      ;;
-  esac
-  command uv "$@"
+preexec() {
+  if [[ "$1" == uv\ add* || "$1" == uv\ sync* || "$1" == uv\ install* || "$1" == uv\ lock* ]]; then
+    if [ -f pyproject.toml ] && grep -q "codeartifact" pyproject.toml; then
+      refresh_codeartifact_token
+    fi
+  fi
 }
