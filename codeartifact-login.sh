@@ -57,8 +57,17 @@ refresh_codeartifact_token() {
 
     # Read the token value and set variable
     if [ -f "$TOKEN_FILE" ]; then
-        UV_INDEX_STUDIO_FLEDGE_PASSWORD=$(cat "$TOKEN_FILE")
+        export UV_INDEX_STUDIO_FLEDGE_PASSWORD=$(cat "$TOKEN_FILE")
     else
         return 1
     fi
+}
+
+uv() {
+  case "$1" in
+    add|sync|install|lock)
+      refresh_codeartifact_token || return 1
+      ;;
+  esac
+  command uv "$@"
 }
