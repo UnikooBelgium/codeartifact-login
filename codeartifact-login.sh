@@ -65,7 +65,20 @@ refresh_codeartifact_token() {
 }
 
 _project_uses_codeartifact() {
-  [ -f pyproject.toml ] && grep -q "codeartifact" pyproject.toml
+  local dir=$PWD
+  while :; do
+    if [ -f "$dir/uv.lock" ] && grep -q "codeartifact" "$dir/uv.lock"; then
+      return 0
+    fi
+    if [ -f "$dir/pyproject.toml" ] && grep -q "codeartifact" "$dir/pyproject.toml"; then
+      return 0
+    fi
+    # uv.lock marks the workspace root, .git the repo root: nothing above is relevant
+    if [ -f "$dir/uv.lock" ] || [ -e "$dir/.git" ] || [ "$dir" = "/" ]; then
+      return 1
+    fi
+    dir=${dir:h}
+  done
 }
 
 # Wrap uv with CodeArtifact token refresh, chaining any existing wrapper (e.g. safe-chain)
@@ -77,7 +90,7 @@ fi
 
 uv() {
   case "$1" in
-    add|sync|install|lock)
+    add|sync|install|lock|run)
       if _project_uses_codeartifact; then
         refresh_codeartifact_token || return 1
       fi
